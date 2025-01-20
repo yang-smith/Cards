@@ -1,0 +1,141 @@
+
+Frontend:
+- Streamlit (快速原型)
+- 简单UI组件
+- 实时预览
+
+Backend:
+- FastAPI
+- flask
+
+
+数据存储使用
+先使用文本 markdown 文件存储，后续使用数据库
+
+
+
+
+# 最小系统项目结构设计
+
+## 目录结构
+````
+cards/
+├── src/
+│   ├── app.py              # Streamlit 主应用
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── card.py         # 卡片核心类
+│   │   ├── storage.py      # 文件存储管理
+│   │   └── search.py       # BM25搜索实现
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── markdown.py     # Markdown处理
+│   │   └── text.py        # 文本处理工具
+│   └── config.py          # 配置文件
+├── data/
+│   ├── cards/             # 存储卡片文件
+│   └── index/            # 存储索引文件
+├── requirements.txt
+└── README.md
+````
+
+## 核心依赖
+````python
+dependencies = {
+    "streamlit": "UI框架",
+    "python-frontmatter": "处理markdown元数据",
+    "rank_bm25": "搜索引擎",
+    "pyyaml": "YAML处理",
+    "markdown": "Markdown渲染",
+    "python-slugify": "文件名处理"
+}
+````
+
+## 主要模块职责
+
+### 1. 核心模块 (core/)
+
+**card.py** - 卡片管理
+````python
+class Card:
+    """卡片核心类"""
+    def __init__(self)
+    def create()
+    def update()
+    def delete()
+    def to_markdown()
+    def from_markdown()
+````
+
+**storage.py** - 存储管理
+````python
+class Storage:
+    """文件存储管理"""
+    def save_card()
+    def load_card()
+    def list_cards()
+    def delete_card()
+    def update_index()
+````
+
+**search.py** - 搜索实现
+````python
+class Search:
+    """BM25搜索实现"""
+    def build_index()
+    def search()
+    def update_index()
+````
+
+### 2. 工具模块 (utils/)
+
+**markdown.py**
+- Markdown解析和渲染
+- frontmatter处理
+- 格式化输出
+
+**text.py**
+- 文本预处理
+- 关键词提取
+- 文件名处理
+
+### 3. UI结构 (app.py)
+
+主要页面组件：
+````python
+def main():
+    """主应用结构"""
+    # 侧边栏
+    - 创建新卡片
+    - 搜索框
+    - 标签筛选
+
+    # 主界面
+    - 卡片列表/预览
+    - 卡片编辑器
+    - 搜索结果展示
+````
+
+## 工作流程
+
+1. **卡片创建流程**：
+   - 用户输入 → 生成元数据 → 保存文件 → 更新索引
+
+2. **搜索流程**：
+   - 查询输入 → BM25检索 → 结果排序 → 展示
+
+3. **编辑流程**：
+   - 加载卡片 → 修改内容 → 更新文件 → 重建索引
+
+## 扩展性考虑
+
+1. **索引扩展**：
+   - 预留向量化接口
+   - 支持多索引方式
+   - 可配置的索引策略
+
+2. **存储升级**：
+   - 数据库迁移接口
+   - 存储抽象层
+   - 备份还原机制
+

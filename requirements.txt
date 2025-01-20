@@ -1,0 +1,7 @@
+streamlit
+python-frontmatter
+pyyaml
+python-slugify
+markdown
+numpy
+rank-bm25 
