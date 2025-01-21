@@ -1,16 +1,14 @@
 import streamlit as st
-from core.card import Card, CardContent, CardSource, CardIndex, CardConnection
+from core.card import Card
 from core.storage import Storage
 from datetime import datetime
-import numpy as np
 
 def create_card_form(storage: Storage):
     """Form for creating a new card"""
     st.header("Create New Card")
     
     title = st.text_input("Title")
-    summary = st.text_area("Summary (Brief description)", height=100)
-    content = st.text_area("Content (Full details)", height=200)
+    content = st.text_area("Content", height=200)
     
     col1, col2 = st.columns(2)
     with col1:
@@ -25,29 +23,26 @@ def create_card_form(storage: Storage):
     
     if st.button("Save Card"):
         if title and content:
-            # Create card objects
-            card_content = CardContent(
-                summary=summary,
-                content=content
-            )
+            # Create metadata dictionary
+            metadata = {
+                "source_type": source_type,
+                "context": context,
+                # Timestamps will be added in __post_init__
+            }
             
-            card_source = CardSource(
-                type=source_type,
-                timestamp=datetime.now(),
-                context=context
-            )
-            
-            card_index = CardIndex(
-                keywords=[k.strip() for k in keywords.split(",") if k.strip()],
-                category=category
-            )
+            # Create index dictionary
+            index = {
+                "keywords": [k.strip() for k in keywords.split(",") if k.strip()],
+                "category": category
+            }
             
             card = Card(
                 id=None,  # Will be auto-generated
                 title=title,
-                content=card_content,
-                source=card_source,
-                index=card_index
+                content=content,
+                metadata=metadata,
+                index=index,
+                connections=[]
             )
             
             if storage.save_card(card):
@@ -65,24 +60,38 @@ def view_cards(storage: Storage):
     st.header("Knowledge Cards")
     
     # Search
-    search_query = st.text_input("Search cards")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        search_query = st.text_input("Search cards")
+    with col2:
+        min_score = st.slider("Min Score", 0.0, 10.0, 1.0, 0.1)
+    
     if search_query:
         results = storage.search_cards(search_query)
         if results:
             st.subheader("Search Results")
             for card, score in results:
-                with st.expander(f"{card.title} (Score: {score:.2f})"):
-                    st.markdown(f"**Summary:** {card.content.summary}")
-                    st.markdown(f"**Content:** {card.content.content}")
-                    st.markdown(f"**Category:** {card.index.category}")
-                    st.markdown(f"**Keywords:** {', '.join(card.index.keywords)}")
-                    
-                    # Show connections
-                    connections = storage.get_connected_cards(card.id)
-                    if connections:
-                        st.markdown("**Connected Cards:**")
-                        for connected_card, strength in connections:
-                            st.markdown(f"- {connected_card.title} (Strength: {strength})")
+                if score >= min_score:
+                    with st.expander(f"{card.title} (Score: {score:.2f})"):
+                        st.markdown(f"**Content:** {card.content}")
+                        st.markdown(f"**Category:** {card.index['category']}")
+                        st.markdown(f"**Keywords:** {', '.join(card.index['keywords'])}")
+                        st.markdown(f"**Created:** {datetime.fromisoformat(card.metadata['created_at']).strftime('%Y-%m-%d %H:%M')}")
+                        
+                        # Show similar cards
+                        similar_cards = storage.get_similar_cards(card.id, limit=3)
+                        if similar_cards:
+                            st.markdown("**Similar Cards:**")
+                            for similar_card, similarity in similar_cards:
+                                st.markdown(f"- {similar_card.title} (Similarity: {similarity:.2f})")
+                        
+                        # Show connections
+                        if card.connections:
+                            st.markdown("**Connected Cards:**")
+                            for conn_id in card.connections:
+                                conn_card = storage.load_card(conn_id)
+                                if conn_card:
+                                    st.markdown(f"- {conn_card.title}")
         else:
             st.info("No results found")
     
@@ -91,35 +100,29 @@ def view_cards(storage: Storage):
     cards = storage.list_cards()
     
     for card in cards:
-        with st.expander(f"{card.title} - {card.source.timestamp.strftime('%Y-%m-%d')}"):
-            st.markdown(f"**Summary:** {card.content.summary}")
-            st.markdown(f"**Content:** {card.content.content}")
-            st.markdown(f"**Category:** {card.index.category}")
-            st.markdown(f"**Keywords:** {', '.join(card.index.keywords)}")
+        created_at = datetime.fromisoformat(card.metadata['created_at'])
+        with st.expander(f"{card.title} - {created_at.strftime('%Y-%m-%d')}"):
+            st.markdown(f"**Content:** {card.content}")
+            st.markdown(f"**Category:** {card.index['category']}")
+            st.markdown(f"**Keywords:** {', '.join(card.index['keywords'])}")
+            st.markdown(f"**Last Updated:** {datetime.fromisoformat(card.metadata['updated_at']).strftime('%Y-%m-%d %H:%M')}")
             
             # Add connection interface
             st.markdown("---")
-            col1, col2 = st.columns(2)
-            with col1:
+            other_cards = [c for c in cards if c.id != card.id]
+            if other_cards:
                 connect_to = st.selectbox(
                     f"Connect to another card",
-                    options=[c.id for c in cards if c.id != card.id],
+                    options=[c.id for c in other_cards],
+                    format_func=lambda x: next(c.title for c in other_cards if c.id == x),
                     key=f"connect_{card.id}"
                 )
-            with col2:
-                strength = st.slider(
-                    "Connection Strength",
-                    min_value=1,
-                    max_value=5,
-                    value=1,
-                    key=f"strength_{card.id}"
-                )
-            
-            if st.button("Add Connection", key=f"btn_{card.id}"):
-                if storage.add_connection(card.id, connect_to, strength):
-                    st.success("Connection added!")
-                else:
-                    st.error("Error adding connection")
+                
+                if st.button("Add Connection", key=f"btn_{card.id}"):
+                    if storage.add_connection(card.id, connect_to):
+                        st.success("Connection added!")
+                    else:
+                        st.error("Error adding connection")
 
 def main():
     st.title("Knowledge Companion")
