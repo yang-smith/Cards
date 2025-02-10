@@ -1,0 +1,8 @@
+/* 确保拖动状态下的特定样式 */
+.canvas-background.dragging .draggable-container {
+  pointer-events: none;
+}
+
+.canvas-background.dragging .draggable-container .pointer-events-auto {
+  pointer-events: auto;
+} 

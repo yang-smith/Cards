@@ -1,14 +1,11 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { Canvas } from './components/canvas/Canvas.tsx';
+import { Canvas } from '@/components/canvas/Canvas'
 
 function App() {
   return (
-    <div className="App">
+    <div className="w-screen h-screen overflow-hidden">
       <Canvas />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

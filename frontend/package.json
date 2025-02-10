@@ -1,49 +1,59 @@
 {
   "name": "frontend",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
-    "@radix-ui/react-icons": "^1.3.2",
-    "cra-template-typescript": "1.2.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@tailwindcss/postcss": "^4.0.5",
+    "@tailwindcss/vite": "^4.0.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "d3": "^7.9.0",
+    "framer-motion": "^12.4.1",
+    "lucide-react": "^0.475.0",
+    "nanoid": "^5.0.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-draggable": "^4.4.6",
+    "react-force-graph-2d": "^1.27.0",
+    "react-resizable": "^3.0.5",
     "react-rnd": "^10.4.14",
-    "react-scripts": "5.0.1",
-    "react-zoom-pan-pinch": "^3.7.0",
+    "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
     "vditor": "^3.10.8",
-    "web-vitals": "^4.2.4",
     "zustand": "^5.0.3"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/node": "^22.13.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@types/react-resizable": "^3.0.8",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "eslint": "^9.20.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
     "postcss": "^8.5.1",
-    "tailwindcss": "^4.0.4"
+    "tailwindcss": "^4.0.5",
+    "typescript": "^5.7.3",
+    "vite": "^6.1.0"
   }
 }

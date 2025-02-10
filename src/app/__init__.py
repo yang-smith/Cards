@@ -17,7 +17,9 @@ def create_app(config_class=Config):
     # 配置CORS
     CORS(app, resources={
         r"/api/*": {
-            "origins": ["http://localhost:3000"], 
+            "origins": ["http://localhost:3000",
+            "http://localhost:5173",
+            ], 
             "supports_credentials": True,   
             "expose_headers": ["Content-Type"],
             "allow_headers": ["Content-Type"],     
@@ -25,8 +27,9 @@ def create_app(config_class=Config):
         }
     })
     
+    db.init_app(app)
     
-    from app.api.routers import bp as api_bp
+    from app.api import bp as api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
     
 
